@@ -168,3 +168,8 @@ fabric.properties
 
 # Sonarlint plugin
 .idea/sonarlint
+
+# Too large files
+.data/credits
+.data/ratings.csv
+
