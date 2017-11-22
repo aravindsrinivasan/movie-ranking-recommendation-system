@@ -170,6 +170,6 @@ fabric.properties
 .idea/sonarlint
 
 # Too large files
-.data/credits
-.data/ratings.csv
+data/credits
+data/ratings.csv
 
