@@ -48,13 +48,14 @@ def webhook():
                     print("Image received, boss!")
                     print(attachment_link)
 
-                    send_message(sender_id, "roger that change!")
-                    faceEmotions = json.loads(detect_emotion(attachment_link))
+                    #send_message(sender_id, "roger that change!")
+                    #faceEmotions = json.loads(detect_emotion(attachment_link))
 
-                    emotion = get_emotion(faceEmotions[0]['scores'])
+                    #emotion = get_emotion(faceEmotions[0]['scores'])
 
-                    send_message(sender_id,str(emotion))
+                    #send_message(sender_id,str(emotion))
 
+                    send_carousel(sender_id);
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
@@ -91,6 +92,66 @@ def send_message(recipient_id, message_text):
         log(r.status_code)
         log(r.text)
 
+
+def send_carousel(recipient):
+    r = requests.post("https://graph.facebook.com/v2.6/me/messages",
+     params={"access_token": os.environ["PAGE_ACCESS_TOKEN"]},
+     data=json.dumps({
+      "recipient":{
+        "id":recipient
+      },
+      "message":{
+        "attachment":{
+          "type":"template",
+          "payload":{
+            "template_type":"generic",
+            "elements":[
+               {
+                "title":"Welcome to Peter\'s Hats",
+                "image_url":"https://image.tmdb.org/t/p/w500/rhIRbceoE9lR4veEXuwCC2wARtG.jpg",
+                "subtitle":"We\'ve got the right hat for everyone.",
+                "default_action": {
+                  "type": "web_url",
+                  "url": "https://peterssendreceiveapp.ngrok.io/view?item=103",
+                  "webview_height_ratio": "tall",
+                },
+                "buttons":[
+                  {
+                    "type":"web_url",
+                    "url":"https://petersfancybrownhats.com",
+                    "title":"View Website"
+                  }
+
+
+                ]
+              },
+
+                {
+                    "title": "Welcome to Peter\'s Hats 2",
+                    "image_url": "https://image.tmdb.org/t/p/w500/rhIRbceoE9lR4veEXuwCC2wARtG.jpg",
+                    "subtitle": "We\'ve got the right hat for everyone.",
+                    "default_action": {
+                        "type": "web_url",
+                        "url": "https://peterssendreceiveapp.ngrok.io/view?item=103",
+                        "webview_height_ratio": "tall",
+                    },
+                    "buttons": [
+                        {
+                            "type": "web_url",
+                            "url": "https://petersfancybrownhats.com",
+                            "title": "View Website"
+                        }
+                    ]
+                }
+
+            ]
+          }
+        }
+      }
+    }),
+     headers={'Content-type': 'application/json'})
+    if r.status_code != requests.codes.ok:
+      print r.text
 
 def log(msg, *args, **kwargs):  # simple wrapper for logging to stdout on heroku
     try:
