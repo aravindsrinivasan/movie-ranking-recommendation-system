@@ -172,4 +172,4 @@ fabric.properties
 # Too large files
 data/credits.csv
 data/ratings.csv
-
+data/contentRec.csv
