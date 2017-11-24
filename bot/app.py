@@ -3,6 +3,7 @@ import sys
 import json
 import emotion_api
 import simple_recommender as srec
+import content_recommender as crec
 from datetime import datetime
 
 
@@ -68,19 +69,23 @@ def webhook():
                             return "ok", 200
 
 
-                    '''
-                                        if "text" in messaging_event["message"]:
+
+                    if "text" in messaging_event["message"]:
                         message_text = messaging_event["message"]["text"]   
                         #query(message_text)
                         send_message(sender_id, "Recommending movies similiar to " + message_text)
                         recommendation = "";
-                        recsList = srec.return_bestRec('Romance')
-                        for recs in recsList:
-                            recommendation += recs
-                            recommendation += '\n'
-                        send_message(sender_id,recommendation)
-                        return "ok", 200'''
-
+                        try:
+                            #recsList = crec.get_contentRec(message_text)
+                            #for recs in recsList:
+                                #recommendation += recs
+                                #recommendation += '\n'
+                            #send_message(sender_id,recommendation)
+                            titles, homepage, poster, date = crec.get_contentRec(message_text)
+                            send_carousel(sender_id, titles, date, poster, homepage);
+                            return "ok", 200
+                        except:
+                            send_message(sender_id, "Could Not Find Movie")
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
