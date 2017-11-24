@@ -173,3 +173,5 @@ fabric.properties
 data/credits.csv
 data/ratings.csv
 data/contentRec.csv
+data/contentRec_3000_meta.csv
+bot/data/*
