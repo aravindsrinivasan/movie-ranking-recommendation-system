@@ -59,11 +59,17 @@ def webhook():
 
                             send_message(sender_id,"Based on our predictions, the emotion you are currently feeling is : " + str(emotion))
                             send_message(sender_id,"Let us recommend you some movies based on your current emotion and the movies you have liked on Facebook")
-                            send_carousel(sender_id);
-                        except:
+                            title, year, poster, homepage =srec.build_chart(emotion)
+                            send_carousel(sender_id, title, year, poster, homepage);
+                            return "ok", 200
+                        except Exception as e:
                             send_message(sender_id,"Could not detect faces in image, please try again")
+                            print(e)
+                            return "ok", 200
 
-                    if "text" in messaging_event["message"]:
+
+                    '''
+                                        if "text" in messaging_event["message"]:
                         message_text = messaging_event["message"]["text"]   
                         #query(message_text)
                         send_message(sender_id, "Recommending movies similiar to " + message_text)
@@ -73,6 +79,9 @@ def webhook():
                             recommendation += recs
                             recommendation += '\n'
                         send_message(sender_id,recommendation)
+                        return "ok", 200'''
+
+
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
 
@@ -109,7 +118,7 @@ def send_message(recipient_id, message_text):
         log(r.text)
 
 
-def send_carousel(recipient):
+def send_carousel(recipient,titleList,yearList,imageList,webpageList):
     r = requests.post("https://graph.facebook.com/v2.6/me/messages",
      params={"access_token": os.environ["PAGE_ACCESS_TOKEN"]},
      data=json.dumps({
@@ -123,18 +132,18 @@ def send_carousel(recipient):
             "template_type":"generic",
             "elements":[
                {
-                "title":"Toy Story",
-                "image_url":"https://image.tmdb.org/t/p/w500/rhIRbceoE9lR4veEXuwCC2wARtG.jpg",
-                "subtitle":"Toy Story",
+                "title": titleList[0],
+                "image_url":"https://image.tmdb.org/t/p/w500" + imageList[0],
+                "subtitle":yearList[0],
                 "default_action": {
                   "type": "web_url",
-                  "url": "https://peterssendreceiveapp.ngrok.io/view?item=103",
+                  "url": webpageList[0],
                   "webview_height_ratio": "tall",
                 },
                 "buttons":[
                   {
                     "type":"web_url",
-                    "url":"https://petersfancybrownhats.com",
+                    "url":webpageList[0],
                     "title":"View Website"
                   }
 
@@ -143,23 +152,77 @@ def send_carousel(recipient):
               },
 
                 {
-                    "title": "Toy Story",
-                    "image_url": "https://image.tmdb.org/t/p/w500/rhIRbceoE9lR4veEXuwCC2wARtG.jpg",
-                    "subtitle": "Toy Story",
+                    "title": titleList[1],
+                    "image_url": "https://image.tmdb.org/t/p/w500" + imageList[1],
+                    "subtitle": yearList[1],
                     "default_action": {
                         "type": "web_url",
-                        "url": "https://peterssendreceiveapp.ngrok.io/view?item=103",
+                        "url": webpageList[1],
                         "webview_height_ratio": "tall",
                     },
                     "buttons": [
                         {
                             "type": "web_url",
-                            "url": "https://petersfancybrownhats.com",
+                            "url": webpageList[1],
                             "title": "View Website"
                         }
+
+                    ]
+                },
+                {
+                    "title": titleList[2],
+                    "image_url": "https://image.tmdb.org/t/p/w500" + imageList[2],
+                    "subtitle": yearList[2],
+                    "default_action": {
+                        "type": "web_url",
+                        "url": webpageList[2],
+                        "webview_height_ratio": "tall",
+                    },
+                    "buttons": [
+                        {
+                            "type": "web_url",
+                            "url": webpageList[2],
+                            "title": "View Website"
+                        }
+
+                    ]
+                },
+                {
+                    "title": titleList[3],
+                    "image_url": "https://image.tmdb.org/t/p/w500" + imageList[3],
+                    "subtitle": yearList[3],
+                    "default_action": {
+                        "type": "web_url",
+                        "url": webpageList[3],
+                        "webview_height_ratio": "tall",
+                    },
+                    "buttons": [
+                        {
+                            "type": "web_url",
+                            "url": webpageList[3],
+                            "title": "View Website"
+                        }
+
+                    ]
+                },
+                {
+                    "title": titleList[4],
+                    "image_url": "https://image.tmdb.org/t/p/w500" + imageList[4],
+                    "subtitle": yearList[4],
+                    "default_action": {
+                        "type": "web_url",
+                        "url": webpageList[4],
+                        "webview_height_ratio": "tall",
+                    },
+                    "buttons": [
+                        {
+                            "type": "web_url",
+                            "url": webpageList[4],
+                            "title": "View Website"
+                        }
+
                     ]
                 }
-
             ]
           }
         }

@@ -14,55 +14,35 @@ from nltk.corpus import wordnet
 
 '''
 
-def build_chart(genre, percentile=0.85):
-    md = pd.read_csv('./data/movies_metadata.csv')
-    md['genres'] = md['genres'].fillna('[]').apply(literal_eval).apply(
-        lambda x: [i['name'] for i in x] if isinstance(x, list) else [])
-    vote_counts = md[md['vote_count'].notnull()]['vote_count'].astype('int')
-    vote_averages = md[md['vote_average'].notnull()]['vote_average'].astype('int')
-    C = vote_averages.mean()
-    m = vote_counts.quantile(0.95)
-    md['year'] = pd.to_datetime(md['release_date'], errors='coerce').apply(
-        lambda x: str(x).split('-')[0] if x != np.nan else np.nan)
-    qualified = md[(md['vote_count'] >= m) & (md['vote_count'].notnull()) & (md['vote_average'].notnull())][
-        ['title', 'year', 'vote_count', 'vote_average', 'popularity', 'genres']]
-    qualified['vote_count'] = qualified['vote_count'].astype('int')
-    qualified['vote_average'] = qualified['vote_average'].astype('int')
+'''  "anger": 1.0570484E-08,
+      "contempt": 1.52679547E-09,
+      "disgust": 1.60232943E-07,
+      "fear": 6.00660363E-12,
+      "happiness": 0.9999998,
+      "neutral": 9.449728E-09,
+      "sadness": 1.23025981E-08,
+      "surprise": 9.91396E-10
+      '''
 
-    def weighted_rating(x):
-        v = x['vote_count']
-        R = x['vote_average']
-        return (v / (v + m) * R) + (m / (m + v) * C)
+emotionToGenre = {'anger' : 'War',
+                  'contempt' : 'Horror',
+                  'disgust' : 'Horror',
+                  'fear' : 'Horror',
+                  'happiness' : 'Animation',
+                  'neutral' : 'Adventure',
+                  'sadness' : 'Romance',
+                  'surprise' : 'Thriller'}
 
-    qualified['wr'] = qualified.apply(weighted_rating, axis=1)
-    qualified = qualified.sort_values('wr', ascending=False).head(250)
-    qualified.head(15)
+def build_chart(emotion, percentile=0.85):
+    genre = emotionToGenre[emotion]
+    md = pd.read_csv('./data/top5Genre.csv')
+    md = md[md['Genre'] == genre]
 
-    s = md.apply(lambda x: pd.Series(x['genres']), axis=1).stack().reset_index(level=1, drop=True)
-    s.name = 'genre'
-    gen_md = md.drop('genres', axis=1).join(s)
-
-
-    df = gen_md[gen_md['genre'] == genre]
-    vote_counts = df[df['vote_count'].notnull()]['vote_count'].astype('int')
-    vote_averages = df[df['vote_average'].notnull()]['vote_average'].astype('int')
-    C = vote_averages.mean()
-    m = vote_counts.quantile(percentile)
+    print "chart built"
+    print md['title'].tolist()
+    print md['year'].tolist()
+    return md['title'].tolist(), md['year'].tolist(), md['poster_path'].tolist(), md['homepage'].tolist()
 
 
-
-    qualified = df[(df['vote_count'] >= m) & (df['vote_count'].notnull()) & (df['vote_average'].notnull())][
-        ['title', 'year', 'vote_count', 'vote_average', 'popularity']]
-    qualified['vote_count'] = qualified['vote_count'].astype('int')
-    qualified['vote_average'] = qualified['vote_average'].astype('int')
-
-    qualified['wr'] = qualified.apply(
-        lambda x: (x['vote_count'] / (x['vote_count'] + m) * x['vote_average']) + (m / (m + x['vote_count']) * C),
-        axis=1)
-    qualified = qualified.sort_values('wr', ascending=False).head(250)
-
-    return qualified
-
-def return_bestRec(genre):
-    recommendationDF = build_chart(genre)[:5]
-    return list(recommendationDF['title'])
+#title, year, poster, homepage = build_chart("anger")
+#print title
