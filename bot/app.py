@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import emotion_api
+import simple_recommender as srec
 from datetime import datetime
 
 
@@ -47,18 +48,31 @@ def webhook():
 
                     if messaging_event["message"].get("attachments"):
                         attachment_link = messaging_event["message"]["attachments"][0]["payload"]["url"]
-                    print("Image received, boss!")
-                    print(attachment_link)
+                        print("Image received, boss!")
+                        print(attachment_link)
 
-                    #send_message(sender_id, "roger that change!")
-                    faceEmotions = json.loads(emotion_api.detect_emotion(attachment_link))
+                        #send_message(sender_id, "roger that change!")
+                        faceEmotions = json.loads(emotion_api.detect_emotion(attachment_link))
 
-                    emotion = emotion_api.get_emotion(faceEmotions[0]['scores'])
+                        try:
+                            emotion = emotion_api.get_emotion(faceEmotions[0]['scores'])
 
-                    send_message(sender_id,"Based on our predictions, the emotion you are currently feeling is : " + str(emotion))
-                    send_message(sender_id,"Let us recommend you some movies based on your current emotion and the movies you have liked on Facebook")
-                    send_carousel(sender_id);
+                            send_message(sender_id,"Based on our predictions, the emotion you are currently feeling is : " + str(emotion))
+                            send_message(sender_id,"Let us recommend you some movies based on your current emotion and the movies you have liked on Facebook")
+                            send_carousel(sender_id);
+                        except:
+                            send_message(sender_id,"Could not detect faces in image, please try again")
 
+                    if "text" in messaging_event["message"]:
+                        message_text = messaging_event["message"]["text"]   
+                        #query(message_text)
+                        send_message(sender_id, "Recommending movies similiar to " + message_text)
+                        recommendation = "";
+                        recsList = srec.return_bestRec('Romance')
+                        for recs in recsList:
+                            recommendation += recs
+                            recommendation += '\n'
+                        send_message(sender_id,recommendation)
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
 
