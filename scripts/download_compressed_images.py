@@ -38,5 +38,3 @@ for index, row in df.iterrows():
         continue
     if not os.path.isfile(file_name):
         img.save(file_name)
-        
-
